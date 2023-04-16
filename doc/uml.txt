@@ -1,0 +1,52 @@
+@startuml
+
+abstract Shape{
++Shape(const std::string &name)
++setName(const std::string &name_) : void
+}
+
+class Rectangle{
++Rectangle(const std::string &name)
+
+}
+
+class Ellipse{
++Ellipse(const std::string &name)
+
+}
+
+class Document{
++setName(const std::string &name_) : void
++addShape(const std::shared_ptr<Shape>& shape): void
++deleteShape(const std::shared_ptr<Shape>& shape): void
++selectShape(double positionX, double positionY):std::shared_ptr<Shape>
+}
+
+class Tools{
+-std::shared_ptr<Shape> selectedShape
+-std::shared_ptr<Document> document;
+
++Tools(std::shared_ptr<Document> p)
++createEllipse(): void
++createRectangle(): void
++selectShape(): void
++deleteSelectedShape(): void
+}
+
+class DocCtrl{
+-std::shared_ptr<Document> data
+-std::unique_ptr<Tools> tools
+
++createDoc(const std::string& name):void
++exportToFile(const std::string& path): void
++importFromFile(const std::string& path): void
+}
+
+Shape <|-- Rectangle
+Shape <|-- Ellipse
+Document o-- Shape
+DocCtrl- Document : manage >
+Tools --o DocCtrl
+Tools - Document : manage >
+
+@enduml
