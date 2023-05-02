@@ -5,12 +5,12 @@
 
 struct Controller {
     explicit Controller() {
-        document = std::make_shared<Document>();
+        document = std::make_shared<Model>();
         std::cout << "create new document  " << '\n';
     }
 
     explicit Controller(const std::string &path) {
-        document = std::make_shared<Document>();
+        document = std::make_shared<Model>();
         std::cout << "import document from " << path << '\n';
     }
 
@@ -33,7 +33,7 @@ struct Controller {
     };
 
 private:
-    std::shared_ptr<Document> document = nullptr;
+    std::shared_ptr<Model> document = nullptr;
 };
 
 
