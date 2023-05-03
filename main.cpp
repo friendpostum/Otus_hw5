@@ -4,57 +4,31 @@
 
 
 struct Viewer : IViewer {
+
     std::shared_ptr<Controller> createDoc() {
-        return std::make_shared<Controller>();
+        return std::make_shared<Controller>(this);
     }
 
     std::shared_ptr<Controller> importDoc(const std::string &path) {
-        return std::make_shared<Controller>(path);
+        return std::make_shared<Controller>(this, path);
     }
 
-    void exportDoc(const std::shared_ptr<Controller> &, const std::string &path) {
-        std::cout << "export document to " << path << '\n';
+    void update(std::string msg) override {
+        std::cout << msg << std::endl;
     }
-
-    void createEllipse(const std::shared_ptr<Controller> & doc){
-        doc->createEllipse();
-    };
-
-    void createRectangle(const std::shared_ptr<Controller> & doc){
-        doc->createRectangle();
-    };
-
-    void selectShape(const std::shared_ptr<Controller> & doc) {
-        doc->select();
-    }
-
-    void deleteShape(const std::shared_ptr<Controller> & doc) {
-        doc->remove();
-    }
-
-
-    Viewer(Model *file) : model{file} {
-        file->subscribe(this);
-    }
-
-    void update() override {
-        std::cout << model->message()<< std::endl;
-    }
-private:
-    Model *model;
 };
 
 
 int main() {
-    Model model;
-    Viewer ui(&model);
 
-    auto doc = ui.createDoc();
+    Viewer ui;
+
     auto doc1 = ui.importDoc("doc.svg");
-    ui.createEllipse(doc);
-    ui.createRectangle(doc);
-    ui.selectShape(doc);
-    ui.deleteShape(doc);
+    auto doc2 = ui.createDoc();
+    doc2->createEllipse();
+    doc2->createRectangle();
+    doc2->select();
+    doc2->remove();
 
     return 0;
 }

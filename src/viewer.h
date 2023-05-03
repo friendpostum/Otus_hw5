@@ -3,5 +3,5 @@
 struct IViewer {
     virtual ~IViewer() = default;
 
-    virtual void update() = 0;
+    virtual void update(std::string msg) = 0;
 };

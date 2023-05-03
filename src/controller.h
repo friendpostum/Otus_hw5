@@ -4,22 +4,24 @@
 #include "model.h"
 
 struct Controller {
-    explicit Controller() {
-        document = std::make_shared<Model>();
+    explicit Controller(IViewer* ui) {
+        document = std::make_shared<Model>("Created doc");
+        document->subscribe(ui);
         std::cout << "create new document  " << '\n';
     }
 
-    explicit Controller(const std::string &path) {
-        document = std::make_shared<Model>();
+    explicit Controller(IViewer* ui, const std::string &path) {
+        document = std::make_shared<Model>("Imported doc");
+        document->subscribe(ui);
         std::cout << "import document from " << path << '\n';
     }
 
     void createEllipse(){
-        document->addShape(std::make_unique<Ellipse>("New ellipse"));
+        document->addShape(std::make_shared<Ellipse>("New ellipse"));
     };
 
     void createRectangle(){
-        document->addShape(std::make_unique<Rectangle>("New rectangle"));
+        document->addShape(std::make_shared<Rectangle>("New rectangle"));
     };
 
     void select(){

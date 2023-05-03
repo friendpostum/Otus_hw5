@@ -2,27 +2,25 @@
 
 #include <string>
 #include <map>
+#include <utility>
 #include <vector>
 #include "viewer.h"
 
 struct Shape {
     virtual ~Shape() = default;
 
-    void setName(const std::string &name_) {}
-
+    std::string name;
 protected:
-    explicit Shape(const std::string &name) {}
+    explicit Shape(std::string name):name(std::move(name)) {}
 };
 
 struct Ellipse : Shape {
-    std::string name;
-
-    Ellipse(const std::string &name) : Shape(name) {}
+    explicit Ellipse(const std::string &name) : Shape(name) {}
 
 };
 
 struct Rectangle : Shape {
-    Rectangle(const std::string &name) : Shape(name) {}
+    explicit Rectangle(const std::string &name) : Shape(name) {}
 
 };
 
@@ -36,39 +34,40 @@ struct IModel {
 struct Model : IModel {
 
     void subscribe(IViewer *viewer) override {
-        viewers.push_back(viewer);
+        ui.push_back(viewer);
     }
 
-    Model() : name("new doc") {}
+    explicit Model(std::string name) : name(std::move(name)) {}
 
     void setName(const std::string &name_) {
         name = name_;
     }
 
     void addShape(const std::shared_ptr<Shape> &shape) {
-        shapes.insert({{0, 0}, std::make_unique<Rectangle>("New rectangle")});
-        msg = "Add shape: ";
+        shapes.insert({{0, 0}, shape});
+        msg = "Add shape: " + shape->name;
         notify();
     }
 
     void selectShape(int posX, int posY) {
         selectedShape = shapes.find({posX, posY});
         msg = "Selected shape: ";
-      //  notify();
+        notify();
     };
 
     void removeShape() {
-        if(selectedShape != shapes.end())
+        if(selectedShape != shapes.end()) {
+            msg = "Removed " + selectedShape->second->name;
             shapes.erase(selectedShape);
-        msg = "Removed shape: ";
-       // notify();
+        } else
+            msg = "The deletion didn't happen. Shape not selected";
+
+        notify();
     }
 
     void notify() {
-        std::cout << "notify"<< std::endl;
-        for (auto& s : viewers) {
-            s->update();
-            std::cout << "update"<< std::endl;
+        for (auto& s : ui) {
+            s->update(msg);
         }
     }
 
@@ -79,10 +78,10 @@ struct Model : IModel {
 private:
     using coord = std::pair<int, int>;
     std::string name;
-    std::map<coord, std::shared_ptr<Shape>> shapes;
-    std::map<coord, std::shared_ptr<Shape>>::iterator selectedShape;
+    std::multimap<coord, std::shared_ptr<Shape>> shapes;
+    std::multimap<coord, std::shared_ptr<Shape>>::iterator selectedShape;
     std::string msg;
-    std::vector<IViewer *> viewers;
+    std::vector<IViewer *> ui;
 };
 
 
