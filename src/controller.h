@@ -1,19 +1,24 @@
 #pragma once
 #include <iostream>
 #include <memory>
+#include "interface.h"
 #include "model.h"
 
 struct Controller {
-    explicit Controller(IViewer* ui) {
+    explicit Controller(std::shared_ptr<IViewer> ui) {
         document = std::make_shared<Model>("Created doc");
-        document->subscribe(ui);
-        std::cout << "create new document  " << '\n';
+        document->subscribe(std::move(ui));
+        std::cout << "Create new document  " << '\n';
     }
 
-    explicit Controller(IViewer* ui, const std::string &path) {
+    explicit Controller(std::shared_ptr<IViewer> ui, const std::string &path) {
         document = std::make_shared<Model>("Imported doc");
-        document->subscribe(ui);
-        std::cout << "import document from " << path << '\n';
+        document->subscribe(std::move(ui));
+        std::cout << "Import document from " << path << '\n';
+    }
+
+    void exportDoc() {
+        document->exportDoc();
     }
 
     void createEllipse(){
@@ -24,13 +29,13 @@ struct Controller {
         document->addShape(std::make_shared<Rectangle>("New rectangle"));
     };
 
-    void select(){
+    void selectShape(){
         int posX = 50;
         int posY = 50;
         document->selectShape(posX, posY);
     };
 
-    void remove(){
+    void deleteShape(){
         document->removeShape();
     };
 

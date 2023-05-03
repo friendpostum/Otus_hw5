@@ -5,3 +5,4 @@ struct IViewer {
 
     virtual void update(std::string msg) = 0;
 };
+

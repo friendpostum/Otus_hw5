@@ -2,16 +2,15 @@
 
 #include <string>
 #include <map>
-#include <utility>
 #include <vector>
-#include "viewer.h"
+#include "interface.h"
 
 struct Shape {
     virtual ~Shape() = default;
 
     std::string name;
 protected:
-    explicit Shape(std::string name):name(std::move(name)) {}
+    explicit Shape(std::string name) : name(std::move(name)) {}
 };
 
 struct Ellipse : Shape {
@@ -28,12 +27,12 @@ struct Rectangle : Shape {
 struct IModel {
     virtual ~IModel() = default;
 
-    virtual void subscribe(IViewer *obs) = 0;
+    virtual void subscribe(std::shared_ptr<IViewer> ui) = 0;
 };
 
 struct Model : IModel {
 
-    void subscribe(IViewer *viewer) override {
+    void subscribe(std::shared_ptr<IViewer> viewer) override {
         ui.push_back(viewer);
     }
 
@@ -41,6 +40,11 @@ struct Model : IModel {
 
     void setName(const std::string &name_) {
         name = name_;
+    }
+
+    void exportDoc() {
+        msg = name + " was exported";
+        notify();;
     }
 
     void addShape(const std::shared_ptr<Shape> &shape) {
@@ -66,7 +70,7 @@ struct Model : IModel {
     }
 
     void notify() {
-        for (auto& s : ui) {
+        for(auto &s: ui) {
             s->update(msg);
         }
     }
@@ -81,7 +85,7 @@ private:
     std::multimap<coord, std::shared_ptr<Shape>> shapes;
     std::multimap<coord, std::shared_ptr<Shape>>::iterator selectedShape;
     std::string msg;
-    std::vector<IViewer *> ui;
+    std::vector<std::shared_ptr<IViewer>> ui;
 };
 
 
